@@ -15,7 +15,7 @@
 int	fun_error(int i)
 {
 	if (i == 1)
-		write(2, "Error. No hay suficientes argumentos.\n", 37);
+		write(2, "Error. No hay suficientes argumentos.\n", 38);
 	if (i == 2)
 		write(2, "Error. Archivos inválidos.\n", 28);
 	return (1);

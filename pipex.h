@@ -28,6 +28,7 @@ void	ft_free_child(char **child);
 void	free_path_list(char **path_list);
 int		fun_error(int i);
 int		ft_error_msg(const char *msg);
+void	ft_command_error(char *command);
 char	*ft_get_path_command(char **command, char **env, char *path_mid);
 char	*ft_check_command(char **path_list, char *path_mid, char *command);
 int		ft_child_2(int *fd, int *pipe_fd, char **command_2, char **env);

@@ -27,6 +27,8 @@ int	ft_child_2(int *fd, int *pipe_fd, char **command_2, char **env)
 	path_command = ft_get_path_command(command_2, env, path_mid);
 	if (path_command)
 		execve(path_command, command_2, env);
+	ft_command_error(command_2[0]);
+	free(path_command);
 	ft_free_child(command_2);
 	exit(127);
 }
@@ -46,8 +48,22 @@ int	ft_child_1(int *fd, int *pipe_fd, char **command_1, char **env)
 	path_command = ft_get_path_command(command_1, env, path_mid);
 	if (path_command)
 		execve(path_command, command_1, env);
+	ft_command_error(command_1[0]);
+	free(path_command);
 	ft_free_child(command_1);
 	exit(127);
+}
+
+static int	ft_wait_children(pid_t fork_1, pid_t fork_2)
+{
+	int	status;
+
+	status = 1;
+	waitpid(fork_1, NULL, 0);
+	waitpid(fork_2, &status, 0);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	return (1);
 }
 
 int	ft_fork(int *fd, char **command_1, char **command_2, char **env)
@@ -55,9 +71,9 @@ int	ft_fork(int *fd, char **command_1, char **command_2, char **env)
 	int		pipe_fd[2];
 	pid_t	fork_1;
 	pid_t	fork_2;
-	int		status;
 
-	pipe(pipe_fd);
+	if (pipe(pipe_fd) == -1)
+		return (ft_error_msg("pipe"));
 	fork_1 = fork();
 	if (fork_1 == 0)
 	{
@@ -68,11 +84,9 @@ int	ft_fork(int *fd, char **command_1, char **command_2, char **env)
 	if (fork_2 == 0)
 	{
 		ft_free_child(command_1);
-		status = ft_child_2(fd, pipe_fd, command_2, env);
+		ft_child_2(fd, pipe_fd, command_2, env);
 	}
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
-	waitpid(fork_1, &status, 0);
-	waitpid(fork_2, &status, 0);
-	return (0);
+	return (ft_wait_children(fork_1, fork_2));
 }

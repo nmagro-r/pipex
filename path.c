@@ -12,6 +12,14 @@
 
 #include "pipex.h"
 
+void	ft_command_error(char *command)
+{
+	write(2, "command not found: ", 19);
+	if (command)
+		write(2, command, ft_strlen(command));
+	write(2, "\n", 1);
+}
+
 char	*ft_check_command(char **path_list, char *path_mid, char *command)
 {
 	int		i;
@@ -44,6 +52,9 @@ char	*ft_get_path_command(char **command, char **env, char *path_mid)
 	char	*path;
 	char	**path_list;
 
+	if (!command[0])
+		return (NULL);
+	path_list = NULL;
 	if (ft_strchr(command[0], '/'))
 		if (access(command[0], X_OK) == 0)
 			return (ft_strdup(command[0]));
@@ -52,7 +63,7 @@ char	*ft_get_path_command(char **command, char **env, char *path_mid)
 	{
 		if (ft_strncmp("PATH=", env[i], 5) == 0)
 		{
-			path_list = ft_split(env[i], ':');
+			path_list = ft_split(env[i] + 5, ':');
 			path = ft_check_command(path_list, path_mid, command[0]);
 			if (path)
 				return (path);
